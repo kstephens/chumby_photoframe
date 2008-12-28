@@ -5,7 +5,11 @@ images :
 	./make-images
 
 lighty: lighty/sbin/lighttpd
-	tar -zxvf archive/chumby_lighttpd.tar.gz
+
+lighty/sbin/lighttpd : archive/chumby_lighttpd.tar.gz
+	mv debugchumby debugchumby.orig
+	tar -zxvf $<
+	mv debugchumby.orig debugchumby
 
 tarball : all
 	tar -xvf ../chumby_photoframe_usb.tar.gz .
