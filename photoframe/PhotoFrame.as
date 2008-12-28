@@ -1,5 +1,6 @@
 
 class PhotoFrame extends MovieClip {
+  var debug = false;
 
   var status_tf:TextField;
   var status_tf_rect:MovieClip;
@@ -13,9 +14,9 @@ class PhotoFrame extends MovieClip {
   var images_xml_loaded = false;
   var images:Array = new Array();
 
-  // var url = "http://www.discarded-ideas.org/files/photoframe-test";
+  var url = "http://www.discarded-ideas.org/files/photoframe-test";
   // var url = "http://10.1.0.106/image";
-  var url = "http://localhost/photoframe/example";
+  // var url = "http://localhost/photoframe/example";
 
   var delay = 6000;
   var displayFilename = "yes";
@@ -23,8 +24,8 @@ class PhotoFrame extends MovieClip {
   var mc:MovieClip;
   var image:MovieClip;
   var image_url_prev:MovieClip;
+
   var img_i = 0;
-  var img:Array = new Array(2);
   var img_0:MovieClip;
   var img_1:MovieClip;
 
@@ -41,7 +42,8 @@ class PhotoFrame extends MovieClip {
     Object.registerClass("bgImage", MovieClip);
     attachMovie("bgImage", "background", 0);
 
-    if ( ! (url != undefined) && (delay != undefined) ) {
+    if ( ! debug && 
+	 ! (_root.config_url != undefined) && (_root.config_delay != undefined) ) {
       setStatusText("Please configure the widget first.");
     }
   }
