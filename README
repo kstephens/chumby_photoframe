@@ -5,5 +5,5 @@ photoframe - Source for Photoframe Chumby Widget,
   modified by Kurt Stephens (http://kurtstephens.com).
   
 usb - Source for creating a USB image file.
-  Included the lighttpd binary image.
+  Includes the lighttpd binary image.
 
