@@ -1,6 +1,6 @@
 
 TARGET=PhotoFrame
-VERSION=1.1
+VERSION=2.0
 ARCHIVENAME=chumby-photoframe
 ARCHIVE=$(ARCHIVENAME)-$(VERSION).tar.gz
 
@@ -27,3 +27,5 @@ clean:
 
 release: $(ARCHIVE)
 
+prereqs:
+	sudo apt-get install swfmill mtasc
