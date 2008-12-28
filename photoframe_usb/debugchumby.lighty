@@ -2,7 +2,16 @@
 # kill the built-in web server
 killall httpd
 killall lighttpd
+
 # create log directory
-mkdir -p /tmp/logs
+logs=/mnt/usb/tmp/logs
+mkdir -p $logs
+chmod 777 $logs
+chmod 666 $logs/*
+for f in $logs/*
+do
+  cp /dev/null $f
+done
+
 # start lighttpd
 LD_LIBRARY_PATH=/mnt/usb/lighty/lib /mnt/usb/lighty/sbin/lighttpd -f /mnt/usb/lighttpd.conf

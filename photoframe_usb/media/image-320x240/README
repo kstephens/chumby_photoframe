@@ -1,6 +1,7 @@
-Images are created here by
+Images are created from files in media/image by running:
 
-> make-images
+> cd /mnt/usb
+> bin/make-images
 
-from files in media/image.
+
 
