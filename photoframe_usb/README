@@ -1,0 +1,16 @@
+This is a USB drive image for Chumby Photoframe.
+
+1) Delete the example images from media/images.
+2) Place your images in media/images.
+3) On a Debian-based Linux host (not your Chumby), run:
+
+  sudo apt-get install netpbm libjpeg-progs
+  make
+
+4) Unmount USB drive.
+5) Turn-off chumby.
+6) Plug-in USB drive.
+7) Turn-on chumby.
+8) Add Photoframe widget via http://chumby.com/.
+9) Configure Photoframe for http://localhost/image.
+
