@@ -1,6 +1,6 @@
-all :
-	$(MAKE) -C photoframe
-	$(MAKE) -C photoframe_usb
+all prereqs :
+	$(MAKE) -C photoframe $@
+	$(MAKE) -C photoframe_usb $@
 
 usb=/dev/null
 install-usb :

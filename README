@@ -16,13 +16,23 @@ photoframe_usb.tar.gz - Basic USB image.
 
 ===========================
 
-To build:
+To install USB image:
 
-> make
-
-To install USB image on /media/MYUSBDRIVE for using http://localhost/image for the Photoframewidget
+  On /media/MYUSBDRIVE for the Photoframe widget using http://localhost/image setting:
 
 > make install-usb usb=/media/MYUSBDRIVE
 
-Or untar the generated chumby_photoframe_usb.tar.gz into the root directory of your USB drive.
+  Or 
+
+* Untar photoframe_usb.tar.gz into the root directory of your USB drive
+* Follow directions in photoframe_usb/README to add new files.
+
+
+===========================
+
+To build:
+
+> make prereqs
+> make
+
 
