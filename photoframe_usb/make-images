@@ -1,7 +1,6 @@
 #!/bin/bash
 #
-# Create converts all images in media/images to 320x240 JPEGs in media/images-320x24
-0.
+# Create converts all images in media/images to 320x240 JPEGs in media/images-320x240.
 #
 dir="$(dirname $0)"
 dir="$(cd "$dir" && /bin/pwd)"
@@ -12,6 +11,12 @@ wxh="${w}x${h}"
 
 src_dir="$dir/media/image"
 dst_dir="$src_dir-$wxh"
+
+if [ ! -d "$src_dir" ]
+then
+  echo "src_dir $src_dir does not exist" 1>&2
+  exit 1
+fi
 
 rotate_=
 rotate_1=
