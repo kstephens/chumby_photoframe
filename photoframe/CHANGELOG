@@ -5,12 +5,12 @@ Version 2.0:
 * Better randomization: images Array is randomized to insure each image
   gets seen in equal likelyhood.
 * Reload images.xml after all images have been shown.
-* Attempt at using touchscreen for basic navigation.
-* Attempt at using <images random="no">... to turn of randomization.
+* Tapping screen skips to next image.
 * Support for debugging.
-
+* Attempt at using <images random="no">... to turn of randomization.
 
 ========================
+
 Version 1.2 : ORIGINAL
 
 commit b6fbc0f57d4bd1487c5bcb5fe31d88b1db96be82

@@ -5,13 +5,15 @@
 class PhotoFrame extends MovieClip {
   // var debug = true;
   var debug = false;
+  var debug_show = false;
 
+  // Top bar: status
   var status_tf:TextField;
   var status_tf_rect:MovieClip;
 
+  // Bottom bar: debug
   var debug_tf:TextField;
   var debug_tf_rect:MovieClip;
-  var debug_show = false;
 
   // Image data.
   var images_xml:XML = new XML();
@@ -22,7 +24,7 @@ class PhotoFrame extends MovieClip {
   var images_i:Number = -1;
 
   // When to display next image.
-  var next_image_at = 0;
+  var image_last_at = 0;
 
   // Initialized at each frame.
   var now = 0;
@@ -50,9 +52,9 @@ class PhotoFrame extends MovieClip {
       // random = false;
     }
 
-    if (_root.config_url != undefined) url = _root.config_url;
-    if (_root.config_delay != undefined) delay = _root.config_delay;
-    if (_root.config_display != undefined) displayFilename = _root.config_display;
+    if ( _root.config_url     != undefined) url             = _root.config_url;
+    if ( _root.config_delay   != undefined) delay           = _root.config_delay;
+    if ( _root.config_display != undefined) displayFilename = _root.config_display;
 
     Object.registerClass("bgImage", MovieClip);
     attachMovie("bgImage", "background", 0);
@@ -92,9 +94,7 @@ class PhotoFrame extends MovieClip {
   }
 
   function setDebugText(text:String) {
-    if ( ! debug_show ) {
-      return;
-    }
+    if ( ! debug_show ) return;
 
     if ( ! debug_tf ) {
       createTextField("debug_tf", 3, 0, 223, 320, 20);
@@ -125,17 +125,19 @@ class PhotoFrame extends MovieClip {
 
 
   function onRelease() {
-    images_i =- 1;
+    images_i += 1;
     showImage();
     // setDebugText("onRelease(): i=" + images_i + ", N=" + images.length);
   }
 
   // Called on each frame
   function onEnterFrame() {
+    // Not ready yet for another image?
     var date = new Date();
     now = date.getTime();
-
-    if ( now < next_image_at ) {
+    var countdown = now - image_last_at;
+    if ( countdown < delay ) {
+      setDebugText("" + images_i + "/" + images.length + " now=" + now + " cd=" + countdown + " d=" + delay);
       return;
     }
 
@@ -153,7 +155,7 @@ class PhotoFrame extends MovieClip {
       var imageUrl = url + "/" + image;
 
       if (displayFilename != "no") {
-	setStatusText("Image: " + imageUrl);
+	setStatusText("" + (images_i + 1) + "/" + images.length + " " + imageUrl);
       } else {
 	setStatusText(undefined);
       }
@@ -173,10 +175,11 @@ class PhotoFrame extends MovieClip {
       mc.swapDepths(1);
 
       // Wait until next time.
-      next_image_at = new Date();
-      next_image_at = next_image_at.getTime() + delay;
+      image_last_at = new Date();
+      image_last_at = image_last_at.getTime();
  
-      setDebugText("i=" + images_i + " N=" + images.length + " r=" + random + " img=" + image + " L=" + images_loaded_on);
+      // setDebugText("i=" + images_i + " N=" + images.length + " r=" + random + " img=" + image + " L=" + images_loaded_on);
+      setDebugText(" L=" + images_loaded_on + " il=" + image_last_at);
     }
   }
 
