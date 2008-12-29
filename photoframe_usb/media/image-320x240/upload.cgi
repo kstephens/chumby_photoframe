@@ -2,52 +2,139 @@
 # -*- ruby -*-
 
 dst_dir = File.expand_path(".")
+file_range = (1 .. 10)
+
+content = ''
+content_footer = ''
 
 begin
-  puts "Content-Type: text/plain"
-  puts
-
   # ruby script fragment
   require 'cgi'
   # require 'stringio' # not in 1.8.4?
 
+  def h *args
+    CGI::escapeHTML(args * " ")
+  end
+
+
   cgi = CGI.new()  # New CGI object
 
-  file = cgi.params['file']
-  raise ArgumentError, "file not set" unless file
+  # Collect file params.
+  files = [ ]
+  file_range.each do | i |
+    param = cgi.params["file#{i}"]
+    if param && ! param.empty? && (x = param.first.original_filename) && ! x.empty?
+      files << { :i => i, :param => param }
+    end
+  end
 
-  # get uri of tx'd file (in tmp normally)
-  tmpfile = file.first.path
+  # $stderr.puts "files = #{files.inspect}"
 
-  # create a Tempfile reference
-  fromfile = file.first
+  files.each do | file |
+    param = file[:param]
+
+    # get uri of tx'd file (in tmp normally)
+    tmpfile = param.first.path
+    
+    # create a Tempfile reference
+    fromfile = param.first
   
-  puts "original_filename = #{fromfile.original_filename.inspect}"
-  puts "content_type = #{fromfile.content_type.chomp.inspect}"
+    file[:src_file] = fromfile.original_filename
+    file[:content_type] = fromfile.content_type
   
-  dst_file = "#{dst_dir}/#{fromfile.original_filename}"
+    file[:dst_file] = "#{dst_dir}/#{File.basename(file[:src_file])}"
  
-  raise ArgumentError, "bad filename" unless dst_file =~ /\.(jpg|png)$/i;
+    unless file[:dst_file] =~ /\.(jpe?g|png)$/i
+      file[:error] = "bad filename"
+      next
+    end
 
-  # note the untaint prevents a security error
-  dst_file = dst_file.untaint
+    # note the untaint prevents a security error
+    file[:dst_file] = file[:dst_file].untaint
+    
+    # copy the file
+    # cgi sets up an StringIO object if file < 10240
+    # or a Tempfile object following works for both
+    File.open(file[:dst_file], 'w') { | out | out << fromfile.read }
+    # when the page finishes the Tempfile/StringIO!) thing is deleted automatically
+    
+    file[:size] = File.size(file[:dst_file])
+  end
 
-  # copy the file
-  # cgi sets up an StringIO object if file < 10240
-  # or a Tempfile object following works for both
-  File.open(dst_file, 'w') { |file| file << fromfile.read }
-  # when the page finishes the Tempfile/StringIO!) thing is deleted automatically
-  
-  puts "dst_file = #{dst_file.inspect}"
-  puts "file_size = #{File.size(dst_file).inspect}"
+  # Update images.xml.
+  unless files.empty?
+    content_footer = `make-images 2>&1`
+  end
 
-  system("/mnt/usb/bin/make-images")
+  # Generate form.
+  content << <<"END"
+<form name="fileupload" 
+      enctype="multipart/form-data" 
+      action="#{File.basename($0)}" 
+      method="post">
+END
+  file_range.each do | i |
+    content << <<"END"
+   <input type="file" name="file#{i}" size="50" /><br />
+END
+    if file = files.find { | file | file[:i] == i }
+      if file[:error]
+        content << <<"END"
+<pre>
+  ERROR:        #{h file[:error]}
+</pre>
+END
+      end
+      content << <<"END"
+<pre>
+  source:       #{h file[:src_file]}
+  destination:  #{h file[:dst_file]}
+  content type: #{h file[:content_type]}
+  size:         #{h file[:size]}
+</pre>
+<br />
+END
+    end
+  end
+
+  content << <<"END"
+   <input type="submit" value="Send files" /><br />
+</form>
+END
+
 rescue Exception => err
-  puts "<pre>"
-  puts "ERROR: #{err.inspect}"
-  puts "  #{err.backtrace * "\n  "}"
-  puts "</pre>"
+  # Generate error content.
+  content << <<"END"
+<pre>
+ERROR: #{h err.inspect}
+  #{h err.backtrace * "\n  "}"
+</pre>"
+END
 end
+
+# Render HTML.
+puts <<"END"
+Content-Type: text/html
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <title>Image upload</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+  </head>
+  <body>
+    <p>Image upload</p>
+  #{content}
+<br />
+<hr />
+<pre>
+  #{h content_footer}
+</pre>
+  </body>
+</html>
+END
+
 exit 0
 
 

@@ -15,9 +15,9 @@ lighty/sbin/lighttpd : archive/chumby_lighttpd.tar.gz
 	mv debugchumby.orig debugchumby
 	touch -f $@
 
-ruby: ruby_arm/bin/ruby
+ruby: bin/ruby
 
-ruby_arm/bin/ruby : archive/chumby_ruby.tgz
+bin/ruby : archive/chumby_ruby.tgz
 	tar -zxvf $<
 	rm -f ruby irb erb
 	touch -f $@
@@ -27,7 +27,8 @@ ARCHIVE=../photoframe_usb.tar.gz
 archive : $(ARCHIVE)
 
 $(ARCHIVE) : images lighttpd ruby
-	tar -zcvf $(ARCHIVE) --exclude=archive/ --exclude='media/image/*.*' .
+	bin/make-images
+	tar -zcvf $(ARCHIVE) --exclude='archive/*' --exclude='media/image/*.*' .
 
 usb=/dev/null
 install : archive
@@ -41,17 +42,16 @@ prereqs:
 
 ip=10.1.0.106
 sync_files=\
-  bin/make-images \
-  debugchumby.* \
-  lighttpd.conf \
+  bin/* \
   media/image-*/*.cgi \
-  media/image-*/*.html \
+#  debugchumby.* \
+#  lighttpd.conf \
 
 sync_to_chumby:
 	set -e; for f in `ls $(sync_files)` ; do \
 	  scp -p $$f root@$(ip):/mnt/usb/$$f ;\
 	done
-	ssh root@$(ip) 'cd /mnt/usb && ./debugchumby'
+#	ssh root@$(ip) 'cd /mnt/usb && ./debugchumby'
 
 
 
