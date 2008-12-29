@@ -1,0 +1,3 @@
+
+<a href="upload.html">Upload image.</a>
+

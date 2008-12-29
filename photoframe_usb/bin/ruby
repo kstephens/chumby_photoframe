@@ -1,0 +1,3 @@
+#!/bin/sh
+RUBYLIB=/mnt/usb/ruby_arm/lib/ruby/1.8 /mnt/usb/ruby_arm/bin/ruby $@
+
